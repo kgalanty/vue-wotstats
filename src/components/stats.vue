@@ -2,16 +2,16 @@
 <div>
   <span v-show="loading">Loading stats...</span>
   <table v-show="!loading" v-if="accountid != ''" class="table table-dark table-striped">
-    <tr>
-      <th>Tank</th>
-      <th>Type</th>
-      <th>Tier</th>
-      <th>Mastery</th>
-      <th>Max Frags</th>
-      <th @click="sortBy('all.battles')">Battles</th>
-      <th>Avg Dmg</th>
-      <th>Win%</th>
-      <th @click="sortBy('WN8')">WN8</th>
+    <tr id="tableheader">
+      <th  class="sticky-top">Tank</th>
+      <th class="sticky-top">Type</th>
+      <th  class="sticky-top" @click="sortBy('tier')">Tier</th>
+      <th class="sticky-top">Mastery</th>
+      <th class="sticky-top">Max Frags</th>
+      <th class="sticky-top" @click="sortBy('all.battles')">Battles</th>
+      <th class="sticky-top">Avg Dmg</th>
+      <th class="sticky-top">Win%</th>
+      <th class="sticky-top" @click="sortBy('WN8')">WN8</th>
     </tr>
     
     <tankstats :wn8exp="wn8exp" :stats="stats"></tankstats>
@@ -22,6 +22,8 @@
 <script>
 import tankstats from './tankstats.vue'
 import json from '../json/wn8exp.json'
+import tankopedia from '../json/tankopedia.json'
+
 function fetchFromObject(obj, prop) {
 
     if(typeof obj === 'undefined') {
@@ -49,7 +51,9 @@ export default {
       reverse: false,
       wn8exp: json.data,
       stats: this.accountid != '' ? this.fetchstats() : '',
-      accstats: ''
+      accstats: '',
+      battlespertier:new Array,
+      avgtier: 0
     }
   },
   watch: { 
@@ -79,6 +83,7 @@ export default {
     },
     fetchstats: function()
   {
+    this.$store.commit('showLoading', true);
     this.loading = true;
        fetch("https://api.worldoftanks.eu/wot/tanks/stats/?application_id=280bec59e88c20ab755c99d4326b478a&account_id="+this.accountid+'&fields=all,max_frags,tank_id,mark_of_mastery')
       .then(resp => resp.json())
@@ -86,6 +91,23 @@ export default {
           this.stats= resp.data[this.accountid].filter(el => el.all.battles > 0);
           this.fetchAccountInfo();
           this.loading = false;
+          this.$store.commit('showLoading', false);
+          
+          this.battlespertier[1]= 0;
+          this.battlespertier[2]= 0
+          this.battlespertier[3]= 0
+          this.battlespertier[4]= 0
+          this.battlespertier[5]= 0
+          this.battlespertier[6]= 0
+          this.battlespertier[7]= 0
+          this.battlespertier[8]= 0
+          this.battlespertier[9]= 0
+          this.battlespertier[10]= 0
+          this.stats.map((x,index) => {
+            this.stats[index].tier = tankopedia.data[x.tank_id].tier;
+            this.battlespertier[this.stats[index].tier]+=x.all.battles;
+          });
+          
           return this.stats;
         });
   },
@@ -95,6 +117,15 @@ export default {
       .then(resp => {
         
         this.accstats = resp.data[this.accountid].statistics.all;
+
+          var sum = 0;
+          this.battlespertier.map((v,k)=> 
+          {
+            sum+=v*k;
+          });
+          this.avgtier = (sum/this.accstats.battles).toFixed(2);
+        this.$store.commit('avgtier', this.avgtier);
+        this.$store.commit('accountstats', resp.data[this.accountid].statistics.all);
       });
   },
       findByTankID(tankid)
@@ -138,19 +169,25 @@ export default {
      var rSPOTc = Math.max(0, Math.min(rDAMAGEc + 0.1, (rSPOT - 0.38) / (1 - 0.38)));
     var rDEFc = Math.max(0, Math.min(rDAMAGEc + 0.1, (rDEF - 0.10) / (1 - 0.10)));
    const wn8 = 980 * rDAMAGEc + 210 * rDAMAGEc * rFRAGc + 155 * rFRAGc * rSPOTc + 75 * rDEFc * rFRAGc + 145 * Math.min(1.8, rWINc);
-console.log(wn8);
+//console.log(wn8);
+this.$store.commit('setWn8', Math.round(wn8*100)/100);
+
   }
   /* eslint-enable no-unused-vars */
 
 },
-  created: function()
-  {    
-  }
 }
+
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+#tableheader th
+{
+   color: #fff;
+    background-color: #343a40;
+
+}
 h3 {
   margin: 40px 0 0;
 }
@@ -165,4 +202,5 @@ li {
 a {
   color: #42b983;
 }
+
 </style>

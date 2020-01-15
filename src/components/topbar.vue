@@ -1,12 +1,10 @@
 <template>
-  <div class="hello">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark ">
         <a class="navbar-brand">WoT Stats</a>
         <!-- <input type="text" placeholder="From (Restaurant)" name="restaurant" class="form-control col-2"> -->
         <input type="text" v-model="nickname" name="nick" placeholder="Nickname" class="form-control col-6 col-4 ">
         <button type="button" class="btn btn-success" @click="searchNickname">Search</button>
     </nav>
-  </div>
 </template>
 
 <script>
@@ -23,6 +21,7 @@ export default {
             this.stats = resp;
             this.accountid = resp.data[0].account_id;
             this.emitEventChanged();
+            this.$store.commit('setNickname', resp.data[0].nickname)
         }
      
       }

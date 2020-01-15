@@ -2,7 +2,7 @@
 
   <div id="app">
     <topbar @updateaccountid="updateaccountid"></topbar>
-    <generalStats></generalStats>
+    <generalStats v-show="!this.$store.state.showLoading && this.$store.state.wn8"></generalStats>
     <stats :accountid="accountid"></stats>
     
   </div>

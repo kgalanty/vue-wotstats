@@ -7,7 +7,7 @@
      <td>
        <tanktype :type="getTanktype(stat.tank_id)"></tanktype>
      </td>
-   <td>{{getTier(stat.tank_id) }}</td>
+   <td>{{ getTier(stat.tank_id) }}</td>
    <td><mastery :mark="stat.mark_of_mastery"></mastery></td>
    <td>{{ stat.max_frags }}</td>
    <td>{{ stat.all.battles }}</td>
@@ -32,10 +32,13 @@ export default {
   },
   data: function() {
     return {
-      wnavg: []
+      //attlespertank: new Array
   }
   },
-
+// computed:
+// {
+//   stat
+// },
   methods:
   {
     getTanktype(tank_id)
@@ -45,17 +48,21 @@ export default {
     getWN8(i)
     {
       //if (this.wnavg.length < this.stats.length) this.wnavg.push(this.stats[i].WN8);
+      //console.log(this.battlespertank.push('test'));
       return this.stats[i].WN8;
     },
     getTier(tankid)
     {
       const tankdetails = this.getTankDetails(tankid);
+      
       if(typeof tankdetails != 'undefined')
       {
-        
+        //this.battlespertank.push(tankdetails.tier);
+        //console.log(tankdetails.tier);
+       // this.battlespertank.push() = {"tier": tankdetails.tier};
         return tankdetails.tier;
       }
-      console.log(tankdetails);
+      //console.log(tankdetails);
       return '';
     },
     getTankIcon(tankid)
@@ -144,6 +151,7 @@ export default {
           return element;
         }
       }); 
+
       return found;
     },
     avgdmg: function(dmg, battles)
@@ -158,8 +166,6 @@ export default {
 
   created: function()
   {
-   
-    
   }
  
 }
