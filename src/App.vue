@@ -1,18 +1,32 @@
 <template>
+
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <topbar @updateaccountid="updateaccountid"></topbar>
+    <generalStats></generalStats>
+    <stats :accountid="accountid"></stats>
+    
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
+import stats from './components/stats.vue'
+import topbar from './components/topbar.vue'
+import generalStats from './components/generalstats.vue'
 export default {
   name: 'app',
   components: {
-    HelloWorld
-  }
+    topbar, stats,generalStats
+  },
+  methods: {
+   updateaccountid: function(id){
+     this.accountid = id;
+   }
+  },
+   data() {
+      return {
+        accountid: ''
+      }
+    }
 }
 </script>
 
@@ -23,6 +37,5 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
 }
 </style>
