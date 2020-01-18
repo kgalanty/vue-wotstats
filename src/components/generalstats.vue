@@ -1,6 +1,6 @@
 <template>
 <div>
-  <div style="display:none">{{ this.$store.state.accountstats }}</div>
+  <div style="">{{ this.$store.state.accountstats }}</div>
   <div class="container-fluid">
   <div class="row">
     <div class="wn8badge col-12 col-sm-4" :style="{backgroundColor: wn8color}">{{ this.$store.state.wn8 }}</div>
@@ -49,17 +49,52 @@
         </div>
       </div>
       </div>
-     
+       <div class="container-fluid">
+        <div class="row">
+              <tankhalloffame class="col-sm" :tank="max_xp" desc="max XP"></tankhalloffame>
+              <tankhalloffame class="col-sm" :tank="max_dmg" desc="max damage"></tankhalloffame>
+              <tankhalloffame class="col-sm" :tank="max_frags" desc="max frags"></tankhalloffame>
+            
+         </div>
+      </div>
   </div>
 </template>
 
 <script>
+import tankopedia from '../json/tankopedia.json'
+import tankhalloffame from './tankhalloffame.vue'
 export default {
   name: 'generalstats',
   props: [''],
-
+  components: {
+    tankhalloffame
+  },
+data: function() {
+		return {
+  
+      
+    } 
+  },
 computed:
 {
+
+  max_xp(){ 
+    return tankopedia.data[this.$store.state.accountstats.max_xp_tank_id] 
+    },
+ max_dmg(){ 
+    return tankopedia.data[this.$store.state.accountstats.max_damage_tank_id] 
+    },
+     max_frags(){ 
+    return tankopedia.data[this.$store.state.accountstats.max_frags_tank_id] 
+    },
+  max_xp_tank_id()
+  {
+    return tankopedia.data[this.$store.state.accountstats.max_xp_tank_id];
+  },
+  max_frags_tank_id()
+  {
+    return tankopedia.data[this.$store.state.accountstats.max_frags_tank_id];
+  },
   wins()
   {
     return ((this.$store.state.accountstats.wins/ this.$store.state.accountstats.battles)*100).toFixed(2)+' %'
